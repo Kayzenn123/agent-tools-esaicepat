@@ -1,0 +1,30 @@
+---
+// Marquee vertikal di sisi layar (B): kiri kata-kata rute, kanan lubang sprocket strip film.
+// Disembunyikan di <1100px via CSS. Isi penting juga tersedia statis di halaman (aria-hidden di sini).
+---
+<div class="vmarquee vmarquee-left" aria-hidden="true">
+  <div class="vmarquee-track" id="vm-left">
+    {
+      Array.from({ length: 2 }).map(() => (
+        <>
+          {['TULIS', 'KIRIM', 'LOLOS', 'JUJUR', 'TULIS', 'KIRIM', 'LOLOS', 'JUJUR'].map((w) => (
+            <span class="vmarquee-word">{w} •</span>
+          ))}
+        </>
+      ))
+    }
+  </div>
+</div>
+<div class="vmarquee vmarquee-right" aria-hidden="true">
+  <div class="vmarquee-track" id="vm-right">
+    {
+      Array.from({ length: 2 }).map(() => (
+        <>
+          {Array.from({ length: 12 }).map(() => (
+            <span class="sprocket"></span>
+          ))}
+        </>
+      ))
+    }
+  </div>
+</div>

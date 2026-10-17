@@ -1,0 +1,694 @@
+---
+import { Icon } from 'astro-icon/components';
+import { TEMPLATES, SECTIONS, HONESTY_PATTERNS, HONESTY_CHECKLIST } from '~/data/templates';
+
+const LS_KEY = 'esaicepat:v1';
+const DRAFTS_KEY = 'esaicepat:drafts:v1';
+const PATTERNS = HONESTY_PATTERNS.map((p) => ({
+  source: p.pattern.source,
+  flags: p.pattern.flags,
+  label: p.label,
+  advice: p.advice,
+}));
+---
+
+<!-- ============ STASIUN 1 — pilih template ============ -->
+<section id="stasiun-1" class="relative mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24 scroll-mt-8" aria-labelledby="st1-title">
+  <div class="flex items-center gap-4 mb-6 ec-reveal">
+    <span class="station-dot wobble" aria-hidden="true">1</span>
+    <p class="font-hand fs-body">stasiun pertama — pilih jurusan kereta</p>
+  </div>
+  <h2 id="st1-title" class="font-display fs-lead mb-3 ec-reveal" data-scramble>Pilih beasiswanya dulu, Dek</h2>
+  <p class="fs-body max-w-2xl mb-8 ec-reveal" style="color: var(--ec-muted)">
+    Tiap beasiswa menilai hal yang beda. Pilih satu — struktur esai dan tipsnya menyesuaikan. Kartu yang dipilih
+    pindah ke depan (coba klik yang lain).
+  </p>
+
+  <div id="tpl-grid" class="grid gap-5 sm:grid-cols-2" role="group" aria-label="Pilih template beasiswa">
+    {
+      TEMPLATES.map((t, i) => (
+        <button
+          type="button"
+          class="tpl-card postcard ec-reveal"
+          data-tpl={t.id}
+          data-order={i}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+        >
+          <span class="postcard-inner block p-6">
+            <span class="flex items-start justify-between gap-3">
+              <span>
+                <span class="font-hand fs-body block" style="color: var(--ec-muted)">tujuan kiriman</span>
+                <span class="font-display fs-lead block">{t.name}</span>
+              </span>
+              <span class="tpl-check" aria-hidden="true">
+                <Icon name="ri:checkbox-circle-fill" class="wobble" width="34" height="34" />
+              </span>
+            </span>
+            <span class="fs-body block mt-2">{t.tagline}</span>
+            <span class="font-hand fs-body block mt-3" style="color: var(--ec-muted)">“{t.tip}”</span>
+          </span>
+        </button>
+      ))
+    }
+  </div>
+  <p id="tpl-msg" class="field-msg mt-4" aria-live="polite"></p>
+</section>
+
+<!-- ============ STASIUN 2 — tulis kartu pos ============ -->
+<section id="stasiun-2" class="relative mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24 scroll-mt-8" aria-labelledby="st2-title">
+  <div class="flex items-center gap-4 mb-6 ec-reveal">
+    <span class="station-dot wobble" aria-hidden="true">2</span>
+    <p class="font-hand fs-body">stasiun kedua — tulis kartunya</p>
+  </div>
+  <h2 id="st2-title" class="font-display fs-lead mb-3 ec-reveal" data-scramble>Tujuh kartu, satu cerita</h2>
+  <p class="fs-body max-w-2xl mb-8 ec-reveal" style="color: var(--ec-muted)">
+    Isi tiap kartu dengan bahasamu sendiri. Tulisanmu tersimpan otomatis di browser ini — aman, tidak dikirim
+    ke mana-mana. Bingung mulai dari mana? Tekan <strong>Isi contoh</strong>, lalu ubah jadi ceritamu.
+  </p>
+
+  <form id="esai-form" novalidate>
+    <div class="grid gap-5 sm:grid-cols-2 mb-8">
+      <div class="postcard tilt ec-reveal">
+        <div class="postcard-inner p-5 tilt-inner">
+          <label class="ec-label" for="f-nama">Nama lengkap pengirim</label>
+          <input class="ec-input" id="f-nama" name="nama" type="text" autocomplete="name" maxlength="80" placeholder="cth. Nisa Rahma" />
+          <p class="field-msg" id="msg-nama" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="postcard tilt ec-reveal">
+        <div class="postcard-inner p-5 tilt-inner">
+          <label class="ec-label" for="f-tujuan">Beasiswa tujuan</label>
+          <input class="ec-input" id="f-tujuan" name="tujuan" type="text" maxlength="80" placeholder="cth. Beasiswa BCA PPTI 2026" />
+          <p class="field-msg" id="msg-tujuan" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {
+        SECTIONS.map((s) => (
+          <div class="postcard tilt ec-reveal">
+            <div class="postcard-inner p-5 tilt-inner">
+              <p class="font-hand fs-body" style="color: var(--ec-muted)">{s.station}{s.optional ? ' (boleh kosong)' : ''}</p>
+              <label class="ec-label fs-lead font-display" for={`f-${s.id}`}>{s.title}</label>
+              <p class="fs-body mb-3" style="color: var(--ec-muted)">{s.hint}</p>
+              <textarea class="ec-textarea" id={`f-${s.id}`} name={s.id} maxlength="2000" aria-describedby={`msg-${s.id} wc-${s.id}`} />
+              <div class="flex items-center justify-between gap-3 mt-1">
+                <p class="field-msg" id={`msg-${s.id}`} aria-live="polite"></p>
+                <p class="font-hand fs-body" id={`wc-${s.id}`} style="color: var(--ec-muted)">0 kata</p>
+              </div>
+              <details class="mt-2">
+                <summary class="font-hand fs-body cursor-pointer" style="color: var(--ec-muted)">intip contoh Mas Pos</summary>
+                <p class="fs-body mt-2 p-3 rounded" style="background: oklch(0.82 0.09 323); border: 2px dashed var(--ec-text);">{s.example}</p>
+              </details>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="flex flex-wrap gap-4 mt-10 ec-reveal">
+      <button type="button" class="ec-btn secondary" id="btn-contoh">
+        <Icon name="ri:lightbulb-line" class="wobble" width="20" height="20" aria-hidden="true" /> Isi contoh
+      </button>
+      <button type="button" class="ec-btn" id="btn-segel">
+        <Icon name="ri:mail-send-line" class="wobble" width="20" height="20" aria-hidden="true" /> Segel jadi esai
+      </button>
+      <button type="button" class="ec-btn secondary" id="btn-bersih">
+        <Icon name="ri:delete-bin-line" class="wobble" width="20" height="20" aria-hidden="true" /> Bersihkan
+      </button>
+    </div>
+    <p id="form-msg" class="field-msg mt-4" aria-live="polite"></p>
+  </form>
+</section>
+
+<!-- ============ STASIUN 3 — cek kejujuran ============ -->
+<section id="stasiun-3" class="relative mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24 scroll-mt-8" aria-labelledby="st3-title">
+  <div class="flex items-center gap-4 mb-6 ec-reveal">
+    <span class="station-dot wobble" aria-hidden="true">3</span>
+    <p class="font-hand fs-body">stasiun ketiga — pemeriksaan bea cukai</p>
+  </div>
+  <h2 id="st3-title" class="font-display fs-lead mb-3 ec-reveal" data-scramble>Jujur dulu, baru kirim</h2>
+  <p class="fs-body max-w-2xl mb-8 ec-reveal" style="color: var(--ec-muted)">
+    Mas Pos memindai kirimanmu: klaim yang terdengar hebat tapi tanpa bukti akan ditandai. Ini bukan vonis —
+    ini pengingat untuk menyiapkan buktinya <em>sebelum</em> panitia bertanya.
+  </p>
+
+  <div class="postcard ec-reveal">
+    <div class="postcard-inner p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <Icon name="ri:search-eye-line" class="wobble" width="28" height="28" aria-hidden="true" />
+        <h3 class="font-display fs-lead">Hasil pemindaian</h3>
+      </div>
+      <div id="honesty-empty">
+        <p class="fs-body" style="color: var(--ec-muted)">
+          Belum ada kiriman untuk dipindai. Tulis kartumu di Stasiun 2, lalu tekan <strong>Segel jadi esai</strong> —
+          pemindaian jalan otomatis.
+        </p>
+      </div>
+      <ul id="honesty-flags" class="grid gap-3" hidden></ul>
+      <p id="honesty-clean" class="fs-body font-hand" hidden>bersih — tidak ada klaim mencurigakan terdeteksi. Tetap jujur ya, Dek!</p>
+    </div>
+  </div>
+
+  <div class="postcard mt-6 ec-reveal">
+    <div class="postcard-inner p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <h3 class="font-display fs-lead">Pakta kejujuran</h3>
+        <p class="font-hand fs-body" id="honest-count" style="color: var(--ec-muted)">0/6</p>
+      </div>
+      <div class="h-3 rounded-full mb-5" style="background: color-mix(in oklch, var(--ec-text) 15%, transparent)" role="progressbar" aria-label="Progres pakta kejujuran" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" id="honest-bar">
+        <div id="honest-fill" class="h-3 rounded-full" style="width: 0%; background: var(--ec-pop); transition: width .3s"></div>
+      </div>
+      <ul class="grid gap-3">
+        {
+          HONESTY_CHECKLIST.map((c) => (
+            <li>
+              <label class="flex items-center gap-3 cursor-pointer fs-body min-h-11">
+                <input type="checkbox" class="h-11 w-11 shrink-0 accent-[#3f7d4e]" data-honest={c.id} />
+                <span>{c.text}</span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STASIUN 4 — hasil kiriman ============ -->
+<section id="stasiun-4" class="relative mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24 scroll-mt-8" aria-labelledby="st4-title">
+  <div class="flex items-center gap-4 mb-6 ec-reveal">
+    <span class="station-dot wobble" aria-hidden="true">4</span>
+    <p class="font-hand fs-body">stasiun keempat — kiriman disegel</p>
+  </div>
+  <h2 id="st4-title" class="font-display fs-lead mb-3 ec-reveal" data-scramble>Ini kirimanmu, Dek</h2>
+  <p class="fs-body max-w-2xl mb-8 ec-reveal" style="color: var(--ec-muted)">
+    Draft esai tersusun dari tujuh kartumu. Ingat: ini <strong>draft</strong> — baca ulang, ubah dengan bahasamu
+    sendiri, baru kirim ke panitia.
+  </p>
+
+  <div id="hasil-empty" class="postcard ec-reveal">
+    <div class="postcard-inner p-8 text-center">
+      <Icon name="ri:mail-open-line" class="wobble mx-auto mb-4" width="52" height="52" aria-hidden="true" />
+      <p class="fs-lead font-display mb-2">Kotak kiriman masih kosong</p>
+      <p class="fs-body" style="color: var(--ec-muted)">
+        Isi kartu-kartu di Stasiun 2 lalu tekan <strong>Segel jadi esai</strong>. Mas Pos yang akan menyegelnya.
+      </p>
+    </div>
+  </div>
+
+  <div id="hasil-wrap" hidden>
+    <div class="relative">
+      <div class="seal-tape t1" aria-hidden="true"></div>
+      <div class="seal-tape t2" aria-hidden="true"></div>
+      <article id="hasil-article" class="essay-paper p-6 sm:p-10" aria-live="polite" aria-label="Draft esai motivasi"></article>
+      <div id="stamp-siap" class="absolute -top-8 -right-4 sm:-right-8 w-32 h-32 sm:w-40 sm:h-40" hidden aria-hidden="true">
+        <svg viewBox="0 0 160 160" class="wobble w-full h-full stamp-drop">
+          <defs>
+            <path id="stamp-circle" d="M 80,80 m -58,0 a 58,58 0 1,1 116,0 a 58,58 0 1,1 -116,0" />
+          </defs>
+          <circle cx="80" cy="80" r="72" fill="none" stroke="var(--ec-pop)" stroke-width="7" />
+          <circle cx="80" cy="80" r="46" fill="none" stroke="var(--ec-pop)" stroke-width="4" />
+          <text font-family="var(--font-hand), cursive" font-size="19" fill="var(--ec-pop)" font-weight="700" letter-spacing="3">
+            <textPath href="#stamp-circle">SIAP DIKIRIM • SIAP DIKIRIM •</textPath>
+          </text>
+          <text x="80" y="92" text-anchor="middle" font-family="var(--font-display), cursive" font-size="34" fill="var(--ec-pop)">✓</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="postcard mt-8 ec-reveal">
+      <div class="postcard-inner p-6">
+        <h3 class="font-display fs-lead mb-4">Kantor pengiriman</h3>
+        <div id="hasil-stats" class="flex flex-wrap gap-x-8 gap-y-2 fs-body mb-6" style="color: var(--ec-muted)"></div>
+        <div class="flex flex-wrap gap-4">
+          <button type="button" class="ec-btn" id="btn-salin">
+            <Icon name="ri:file-copy-line" class="wobble" width="20" height="20" aria-hidden="true" /> Salin kiriman
+          </button>
+          <button type="button" class="ec-btn secondary" id="btn-unduh">
+            <Icon name="ri:download-line" class="wobble" width="20" height="20" aria-hidden="true" /> Unduh .txt
+          </button>
+          <button type="button" class="ec-btn blue" id="btn-link">
+            <Icon name="ri:share-line" class="wobble" width="20" height="20" aria-hidden="true" /> Salin link kiriman
+          </button>
+        </div>
+        <div class="flex flex-wrap items-end gap-3 mt-6">
+          <div class="grow min-w-52">
+            <label class="ec-label" for="draft-name">Nama draft untuk arsip</label>
+            <input class="ec-input" id="draft-name" type="text" maxlength="60" placeholder="cth. Esai BCA — draf 1" />
+          </div>
+          <button type="button" class="ec-btn green" id="btn-simpan">
+            <Icon name="ri:save-line" class="wobble" width="20" height="20" aria-hidden="true" /> Simpan ke arsip
+          </button>
+        </div>
+        <p id="hasil-msg" class="field-msg mt-4" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARSIP ============ -->
+<section id="arsip" class="relative mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24 scroll-mt-8" aria-labelledby="arsip-title">
+  <div class="flex items-center gap-4 mb-6 ec-reveal">
+    <span class="station-dot wobble" aria-hidden="true">✉</span>
+    <p class="font-hand fs-body">gudang arsip — tersimpan di browser ini</p>
+  </div>
+  <h2 id="arsip-title" class="font-display fs-lead mb-3 ec-reveal" data-scramble>Arsip kirimanmu</h2>
+  <div id="arsip-empty" class="postcard ec-reveal">
+    <div class="postcard-inner p-8 text-center">
+      <p class="fs-body" style="color: var(--ec-muted)">Belum ada draft tersimpan. Draft yang kamu simpan dari Stasiun 4 akan nangkring di sini.</p>
+    </div>
+  </div>
+  <ul id="draft-list" class="grid gap-4 sm:grid-cols-2"></ul>
+</section>
+
+<!-- easter egg -->
+<div id="egg-stamp" aria-hidden="true">
+  <svg viewBox="0 0 320 160" class="wobble w-72 stamp-drop">
+    <rect x="10" y="10" width="300" height="140" rx="8" fill="none" stroke="var(--ec-pop)" stroke-width="8" />
+    <text x="160" y="95" text-anchor="middle" font-family="var(--font-display), cursive" font-size="44" fill="var(--ec-pop)">LOLOS SELEKSI</text>
+    <text x="160" y="130" text-anchor="middle" font-family="var(--font-hand), cursive" font-size="24" fill="var(--ec-pop)">berkas!</text>
+  </svg>
+</div>
+
+<script define:vars={{ TEMPLATES, SECTIONS, PATTERNS, CHECKLIST: HONESTY_CHECKLIST, LS_KEY, DRAFTS_KEY }}>
+  const $ = (id) => document.getElementById(id);
+  const FIELD_IDS = ['nama', 'tujuan', ...SECTIONS.map((s) => s.id)];
+
+  const state = { templateId: TEMPLATES[0].id, answers: {}, checklist: {} };
+  FIELD_IDS.forEach((f) => (state.answers[f] = ''));
+
+  const tpl = () => TEMPLATES.find((t) => t.id === state.templateId) || TEMPLATES[0];
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const countWords = (t) => t.trim().split(/\s+/).filter(Boolean).length;
+
+  function saveState() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({ v: 1, templateId: state.templateId, answers: state.answers, checklist: state.checklist, updatedAt: Date.now() }));
+    } catch (e) { /* penyimpanan penuh / privat — abaikan diam-diam */ }
+  }
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (!raw) return false;
+      const d = JSON.parse(raw);
+      if (!d || d.v !== 1 || typeof d.answers !== 'object') return false;
+      if (TEMPLATES.some((t) => t.id === d.templateId)) state.templateId = d.templateId;
+      FIELD_IDS.forEach((f) => { if (typeof d.answers[f] === 'string') state.answers[f] = d.answers[f].slice(0, 2000); });
+      if (d.checklist && typeof d.checklist === 'object') state.checklist = d.checklist;
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function readDrafts() {
+    try {
+      const d = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]');
+      return Array.isArray(d) ? d.filter((x) => x && typeof x.name === 'string' && x.answers) : [];
+    } catch (e) { return []; }
+  }
+  function writeDrafts(list) {
+    try { localStorage.setItem(DRAFTS_KEY, JSON.stringify(list.slice(0, 30))); } catch (e) {}
+  }
+
+  /* ---------- template picker + FLIP ---------- */
+  function flipSort() {
+    const grid = $('tpl-grid');
+    const cards = [...grid.querySelectorAll('.tpl-card')];
+    const first = new Map(cards.map((c) => [c, c.getBoundingClientRect()]));
+    cards.sort((a, b) => (a.dataset.tpl === state.templateId ? -1 : b.dataset.tpl === state.templateId ? 1 : 0));
+    cards.forEach((c) => grid.appendChild(c));
+    cards.forEach((c) => {
+      const f = first.get(c), l = c.getBoundingClientRect();
+      const dx = f.left - l.left, dy = f.top - l.top;
+      if (dx || dy) {
+        c.animate(
+          [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0,0)' }],
+          { duration: 450, easing: 'cubic-bezier(.2,.9,.3,1.2)' }
+        );
+      }
+    });
+  }
+  function renderTplCards() {
+    document.querySelectorAll('.tpl-card').forEach((c) => {
+      const active = c.dataset.tpl === state.templateId;
+      c.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+  document.querySelectorAll('.tpl-card').forEach((c) => {
+    c.addEventListener('click', () => {
+      if (state.templateId === c.dataset.tpl) return;
+      state.templateId = c.dataset.tpl;
+      renderTplCards();
+      flipSort();
+      saveState();
+      $('tpl-msg').textContent = `Siap — struktur esai mengikuti ${tpl().name}. ${tpl().tip}`;
+      $('tpl-msg').className = 'field-msg ok';
+    });
+  });
+
+  /* ---------- form ---------- */
+  function paintForm() {
+    FIELD_IDS.forEach((f) => { const el = $('f-' + f); if (el) el.value = state.answers[f] || ''; });
+    updateCounts();
+  }
+  function updateCounts() {
+    SECTIONS.forEach((s) => {
+      const n = countWords(state.answers[s.id] || '');
+      const el = $('wc-' + s.id);
+      if (el) {
+        el.textContent = `${n} kata${s.minWords ? ` (target ${s.minWords}–${s.maxWords})` : ''}`;
+        el.style.color = n > s.maxWords ? 'oklch(0.42 0.19 25)' : 'var(--ec-muted)';
+      }
+    });
+  }
+  let saveT;
+  FIELD_IDS.forEach((f) => {
+    const el = $('f-' + f);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      state.answers[f] = el.value;
+      clearTimeout(saveT);
+      saveT = setTimeout(saveState, 400);
+      if (SECTIONS.some((s) => s.id === f)) updateCounts();
+    });
+  });
+
+  const CONTOH = {
+    nama: 'Nisa Rahma',
+    tujuan: 'Beasiswa BCA PPTI 2026',
+    pembuka: 'Perkenalkan, saya Nisa Rahma, siswi kelas 12 SMA Negeri 1 Kadugede. Surat ini saya tulis untuk mengajukan Beasiswa BCA PPTI 2026.',
+    latar: 'Saya anak kedua dari tiga bersaudara. Ayah bekerja sebagai buruh tani dan ibu membuka warung kecil di depan rumah. Sejak SMP saya terbiasa membantu warung sepulang sekolah sambil mempertahankan nilai di peringkat lima besar kelas.',
+    motivasi: 'Saya memilih jurusan Sistem Informasi karena sejak kelas 10 saya membuatkan sistem pencatatan sederhana untuk warung ibu memakai spreadsheet. Dari situ saya sadar teknologi bisa menyelesaikan masalah nyata orang-orang di sekitar saya.',
+    prestasi: 'Juara 2 lomba karya tulis ilmiah tingkat kabupaten (2024), anggota OSIS divisi humas, dan relawan pengajar di TPQ desa setiap akhir pekan.',
+    rencana: 'Selama kuliah saya menargetkan IPK di atas 3,50, aktif di himpunan jurusan, dan membangun portofolio tiga proyek aplikasi — salah satunya sistem kasir gratis untuk UMKM di desa saya.',
+    kontribusi: 'Setelah lulus, saya ingin kembali ke daerah dan membantu digitalisasi UMKM — dimulai dari koperasi tani tempat ayah saya bekerja — agar pencatatan mereka rapi dan akses pasarnya meluas.',
+    penutup: 'Demikian surat motivasi ini saya tulis dengan sejujurnya. Besar harapan saya diberi kesempatan menjadi bagian dari penerima beasiswa ini. Atas perhatiannya, saya ucapkan terima kasih.',
+  };
+  $('btn-contoh').addEventListener('click', () => {
+    FIELD_IDS.forEach((f) => { state.answers[f] = CONTOH[f] || ''; });
+    paintForm(); saveState();
+    $('form-msg').textContent = 'Contoh terisi — sekarang ubah jadi ceritamu sendiri, Dek. Jangan kirim contoh apa adanya!';
+    $('form-msg').className = 'field-msg ok';
+  });
+  $('btn-bersih').addEventListener('click', () => {
+    FIELD_IDS.forEach((f) => (state.answers[f] = ''));
+    paintForm(); saveState();
+    ['hasil-wrap'].forEach((id) => ($(id).hidden = true));
+    $('hasil-empty').hidden = false;
+    $('form-msg').textContent = 'Semua kartu dikosongkan. Mulai lagi dari nol juga berani, kok.';
+    $('form-msg').className = 'field-msg';
+  });
+
+  function setMsg(f, text, ok) {
+    const msg = $('msg-' + f);
+    if (msg) { msg.textContent = text; msg.className = 'field-msg' + (text ? (ok ? ' ok' : ' err') : ''); }
+    const input = $('f-' + f);
+    if (input) input.closest('div').classList.toggle('field-error', !!text && !ok);
+    return !text || !!ok;
+  }
+  const NEED_MSG = {
+    nama: 'Nama masih kosong — panitia perlu tahu siapa pengirimnya.',
+    tujuan: 'Tujuan beasiswa belum diisi — tulis nama beasiswanya.',
+    pembuka: 'Kartu pembuka masih kosong — sapa panitia dulu satu-dua kalimat.',
+    latar: 'Latar belakang masih kosong — ceritakan asalmu dengan jujur.',
+    motivasi: 'Motivasi masih kosong — kenapa jurusan ini? Panitia ingin tahu alasannya.',
+    rencana: 'Rencana studi masih kosong — tulis target konkretmu selama kuliah.',
+    kontribusi: 'Kontribusi masih kosong — apa yang akan kamu berikan kembali?',
+    penutup: 'Penutup masih kosong — akhiri dengan sopan satu-dua kalimat.',
+  };
+  function validate() {
+    let ok = true;
+    FIELD_IDS.forEach((f) => {
+      const v = (state.answers[f] || '').trim();
+      if (!v && f !== 'prestasi') ok = setMsg(f, NEED_MSG[f] || 'Belum diisi.', false) && ok;
+      else {
+        const s = SECTIONS.find((x) => x.id === f);
+        if (s && v && countWords(v) < s.minWords) ok = setMsg(f, `Baru ${countWords(v)} kata — target minimal ${s.minWords}. Tambah satu-dua kalimat lagi.`, false) && ok;
+        else if (s && v && countWords(v) > s.maxWords) ok = setMsg(f, `${countWords(v)} kata — kepanjangan (maks ${s.maxWords}). Pangkas yang tidak perlu.`, false) && ok;
+        else ok = setMsg(f, '', true) && ok;
+      }
+    });
+    return ok;
+  }
+
+  /* ---------- rakit esai ---------- */
+  function buildParts() {
+    const a = state.answers, t = tpl();
+    const nama = (a.nama || '').trim() || '[Nama kamu]';
+    const tujuan = (a.tujuan || '').trim() || t.framing;
+    const parts = [];
+    const push = (title, body) => { if ((body || '').trim()) parts.push({ title, body: body.trim() }); };
+    push('Pembuka', (a.pembuka || '').trim() || `Perkenalkan, saya ${nama}. Surat ini saya tulis untuk mengajukan ${tujuan}.`);
+    push('Latar Belakang', a.latar);
+    push('Motivasi', a.motivasi);
+    if ((a.prestasi || '').trim()) push('Prestasi & Pengalaman', a.prestasi);
+    push('Rencana Studi', a.rencana);
+    push('Kontribusi', a.kontribusi);
+    push('Penutup', (a.penutup || '').trim() || 'Demikian surat motivasi ini saya tulis dengan sejujurnya. Atas perhatian dan kesempatannya, saya ucapkan terima kasih.');
+    return { nama, tujuan, parts };
+  }
+  function essayText() {
+    const { nama, tujuan, parts } = buildParts();
+    const lines = ['ESAI MOTIVASI', tujuan, `— ${nama}`, ''];
+    parts.forEach((p) => lines.push(p.title.toUpperCase(), '', p.body, ''));
+    return lines.join('\n').trim() + '\n';
+  }
+
+  /* ---------- cek kejujuran ---------- */
+  function runHonesty() {
+    const text = essayText();
+    const flags = PATTERNS.map((p) => ({ ...p, re: new RegExp(p.source, p.flags) })).filter((p) => p.re.test(text));
+    const list = $('honesty-flags');
+    $('honesty-empty').hidden = true;
+    if (!flags.length) {
+      list.hidden = true;
+      $('honesty-clean').hidden = false;
+      return;
+    }
+    $('honesty-clean').hidden = true;
+    list.hidden = false;
+    list.innerHTML = '';
+    flags.forEach((f) => {
+      const li = document.createElement('li');
+      li.className = 'p-4 rounded';
+      li.style.cssText = 'background: oklch(0.85 0.08 25); border: 2.5px solid var(--ec-text);';
+      const b = document.createElement('p');
+      b.className = 'font-bold fs-body';
+      b.textContent = '⚠ ' + f.label;
+      const s = document.createElement('p');
+      s.className = 'fs-body';
+      s.textContent = 'Saran Mas Pos: ' + f.advice;
+      li.append(b, s);
+      list.appendChild(li);
+    });
+  }
+
+  /* checklist */
+  const boxes = [...document.querySelectorAll('[data-honest]')];
+  function paintChecklist() {
+    let n = 0;
+    boxes.forEach((b) => { b.checked = !!state.checklist[b.dataset.honest]; if (b.checked) n++; });
+    $('honest-count').textContent = `${n}/6`;
+    $('honest-fill').style.width = `${(n / 6) * 100}%`;
+    $('honest-bar').setAttribute('aria-valuenow', String(n));
+  }
+  boxes.forEach((b) => b.addEventListener('change', () => { state.checklist[b.dataset.honest] = b.checked; paintChecklist(); saveState(); }));
+
+  /* ---------- segel ---------- */
+  $('btn-segel').addEventListener('click', () => {
+    if (!validate()) {
+      $('form-msg').textContent = 'Ada kartu yang belum beres — perbaiki yang bertanda dulu, Dek.';
+      $('form-msg').className = 'field-msg err';
+      const firstErr = document.querySelector('.field-error .ec-input, .field-error .ec-textarea');
+      if (firstErr) firstErr.focus();
+      return;
+    }
+    const { nama, tujuan, parts } = buildParts();
+    const t = tpl();
+    const article = $('hasil-article');
+    article.innerHTML = '';
+    const h = document.createElement('h3');
+    h.className = 'font-display fs-lead text-center';
+    h.textContent = 'Esai Motivasi';
+    const sub = document.createElement('p');
+    sub.className = 'font-hand fs-body text-center mb-6';
+    sub.textContent = `${tujuan} — ${nama}`;
+    article.append(h, sub);
+    let total = 0;
+    parts.forEach((p) => {
+      const n = countWords(p.body);
+      total += n;
+      const sh = document.createElement('h4');
+      sh.className = 'font-hand fs-body mt-5 mb-1';
+      sh.style.color = 'var(--ec-muted)';
+      sh.textContent = `${p.title} — ${n} kata`;
+      const para = document.createElement('p');
+      para.className = 'fs-body';
+      para.textContent = p.body;
+      article.append(sh, para);
+    });
+    $('hasil-stats').innerHTML = '';
+    [['Total kata', `${total} kata`], ['Template', t.name], ['Bagian', `${parts.length} bagian`]].forEach(([k, v]) => {
+      const d = document.createElement('div');
+      const dt = document.createElement('dt'); dt.className = 'font-hand fs-body'; dt.textContent = k;
+      const dd = document.createElement('dd'); dd.className = 'font-bold fs-body'; dd.textContent = v;
+      const wrap = document.createElement('div'); wrap.append(dt, dd); d.append(wrap);
+      $('hasil-stats').appendChild(d);
+    });
+    $('hasil-empty').hidden = true;
+    $('hasil-wrap').hidden = false;
+    const stamp = $('stamp-siap');
+    stamp.hidden = false;
+    stamp.firstElementChild.classList.remove('stamp-drop');
+    void stamp.offsetWidth;
+    stamp.firstElementChild.classList.add('stamp-drop');
+    runHonesty();
+    $('form-msg').textContent = 'Tersegel! Baca ulang drafnya, cek hasil pemindaian di Stasiun 3, baru putuskan dikirim.';
+    $('form-msg').className = 'field-msg ok';
+    saveState();
+    document.getElementById('stasiun-4').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  /* ---------- aksi kiriman ---------- */
+  function flashHasil(msg, ok) {
+    $('hasil-msg').textContent = msg;
+    $('hasil-msg').className = 'field-msg' + (ok === false ? ' err' : ' ok');
+  }
+  async function copyText(text, okMsg) {
+    try {
+      await navigator.clipboard.writeText(text);
+      flashHasil(okMsg);
+    } catch (e) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        flashHasil(okMsg);
+      } catch (e2) { flashHasil('Gagal menyalin — blokir izin clipboard. Coba unduh .txt saja.', false); }
+    }
+  }
+  $('btn-salin').addEventListener('click', () => copyText(essayText(), 'Tersalin! Tempel ke dokumenmu, lalu baca ulang sekali lagi.'));
+  $('btn-unduh').addEventListener('click', () => {
+    const blob = new Blob([essayText()], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const aEl = document.createElement('a');
+    const nama = (state.answers.nama || 'tanpa-nama').trim().toLowerCase().replace(/[^a-z0-9]+/gi, '-');
+    aEl.href = url;
+    aEl.download = `esai-motivasi-${nama}.txt`;
+    document.body.appendChild(aEl);
+    aEl.click();
+    aEl.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    flashHasil('Terunduh! Simpan baik-baik, Dek.');
+  });
+  $('btn-link').addEventListener('click', async () => {
+    const payload = { t: state.templateId, a: state.answers };
+    const json = JSON.stringify(payload);
+    const b64 = btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    if (b64.length > 4000) { flashHasil('Jawabanmu terlalu panjang untuk dimasukkan ke link. Unduh .txt saja ya.', false); return; }
+    const url = `${location.origin}${location.pathname}?s=${b64}`;
+    await copyText(url, 'Link kiriman tersalin! Siapa pun yang membukanya melihat formulir terisi sama.');
+  });
+  $('btn-simpan').addEventListener('click', () => {
+    const nameInput = $('draft-name');
+    const name = (nameInput.value || '').trim() || `Draf ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`;
+    const drafts = readDrafts();
+    drafts.unshift({ id: Date.now(), name: name.slice(0, 60), savedAt: Date.now(), templateId: state.templateId, answers: { ...state.answers } });
+    writeDrafts(drafts);
+    nameInput.value = '';
+    renderArchive();
+    flashHasil(`"${name}" tersimpan di arsip.`);
+  });
+
+  /* ---------- arsip ---------- */
+  function renderArchive() {
+    const drafts = readDrafts();
+    const list = $('draft-list');
+    list.innerHTML = '';
+    $('arsip-empty').style.display = drafts.length ? 'none' : '';
+    drafts.forEach((d) => {
+      const li = document.createElement('li');
+      li.className = 'postcard';
+      const inner = document.createElement('div');
+      inner.className = 'postcard-inner p-5';
+      const tname = (TEMPLATES.find((t) => t.id === d.templateId) || TEMPLATES[0]).name;
+      const h4 = document.createElement('p');
+      h4.className = 'font-display fs-lead';
+      h4.textContent = d.name;
+      const meta = document.createElement('p');
+      meta.className = 'font-hand fs-body mb-4';
+      meta.style.color = 'var(--ec-muted)';
+      meta.textContent = `${tname} — ${new Date(d.savedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+      const row = document.createElement('div');
+      row.className = 'flex gap-3';
+      const bLoad = document.createElement('button');
+      bLoad.type = 'button'; bLoad.className = 'ec-btn secondary';
+      bLoad.innerHTML = '<span aria-hidden="true">↺</span> Muat';
+      bLoad.addEventListener('click', () => {
+        state.templateId = d.templateId;
+        FIELD_IDS.forEach((f) => (state.answers[f] = typeof d.answers[f] === 'string' ? d.answers[f] : ''));
+        renderTplCards(); paintForm(); paintChecklist(); saveState();
+        document.getElementById('stasiun-2').scrollIntoView({ behavior: 'smooth' });
+      });
+      const bDel = document.createElement('button');
+      bDel.type = 'button'; bDel.className = 'ec-btn secondary';
+      bDel.innerHTML = '<span aria-hidden="true">✕</span> Hapus';
+      bDel.setAttribute('aria-label', `Hapus draft ${d.name}`);
+      bDel.addEventListener('click', () => {
+        writeDrafts(readDrafts().filter((x) => x.id !== d.id));
+        renderArchive();
+      });
+      row.append(bLoad, bDel);
+      inner.append(h4, meta, row);
+      li.appendChild(inner);
+      list.appendChild(li);
+    });
+  }
+
+  /* ---------- deep-link ---------- */
+  function applyDeepLink() {
+    const s = new URLSearchParams(location.search).get('s');
+    if (!s) return false;
+    try {
+      const json = decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+      const d = JSON.parse(json);
+      if (!d || typeof d !== 'object' || !TEMPLATES.some((t) => t.id === d.t)) return false;
+      state.templateId = d.t;
+      if (d.a && typeof d.a === 'object') {
+        FIELD_IDS.forEach((f) => { if (typeof d.a[f] === 'string') state.answers[f] = d.a[f].slice(0, 2000); });
+      }
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ---------- easter egg: ketik "lolos" ---------- */
+  let eggBuf = '';
+  document.addEventListener('keydown', (e) => {
+    if (e.key.length === 1) {
+      eggBuf = (eggBuf + e.key.toLowerCase()).slice(-5);
+      if (eggBuf === 'lolos') {
+        eggBuf = '';
+        const egg = $('egg-stamp');
+        egg.classList.add('show');
+        setTimeout(() => egg.classList.remove('show'), 2200);
+      }
+    }
+  });
+
+  /* ---------- init ---------- */
+  const fromLink = applyDeepLink();
+  if (!fromLink) loadState();
+  renderTplCards();
+  paintForm();
+  paintChecklist();
+  renderArchive();
+  if (fromLink) {
+    $('tpl-msg').textContent = 'Kiriman dari link berhasil dibuka — periksa lagi sebelum dipakai ya, Dek.';
+    $('tpl-msg').className = 'field-msg ok';
+  }
+</script>

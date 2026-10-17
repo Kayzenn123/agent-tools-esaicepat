@@ -1,0 +1,14 @@
+{
+	"pid": 23973,
+	"port": 8931,
+	"url": "http://127.0.0.1:8931",
+	"urls": {
+		"local": [
+			"http://127.0.0.1:8931/agent-tools-esaicepat"
+		],
+		"network": [],
+		"networkInterfaceNames": []
+	},
+	"background": false,
+	"startedAt": "2026-10-17T01:18:36.710Z"
+}

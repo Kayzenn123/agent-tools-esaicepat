@@ -1,0 +1,438 @@
+/* EsaiCepat — "Rute kiriman" custom styles.
+   Batasan seed: HANYA 3 ukuran font (display / lead / body). */
+
+.font-display {
+  font-family: var(--font-display), cursive;
+}
+.font-body {
+  font-family: var(--font-body), sans-serif;
+}
+.font-hand {
+  font-family: var(--font-hand), cursive;
+}
+
+.fs-display {
+  font-size: clamp(3.5rem, 14vw, 10rem);
+  line-height: 0.95;
+}
+.fs-lead {
+  font-size: 1.35rem;
+  line-height: 1.4;
+}
+.fs-body {
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+/* ---- wobble: hand-drawn goyang untuk ikon & ornamen ---- */
+.wobble {
+  filter: url(#ec-wobble);
+}
+
+/* ---- kartu pos ---- */
+.postcard {
+  background: var(--ec-surface);
+  border: 3px solid var(--ec-text);
+  border-radius: 4px;
+  box-shadow: 6px 6px 0 var(--ec-text);
+  position: relative;
+}
+.postcard::after {
+  /* perforasi tepi */
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 2px dashed color-mix(in oklch, var(--ec-text) 35%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.postcard-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- rel / sumbu timeline ---- */
+.rail-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  transform: translateX(-50%);
+  background: color-mix(in oklch, var(--ec-text) 22%, transparent);
+  border-radius: 3px;
+}
+.rail-progress {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 6px;
+  transform: translateX(-50%);
+  background: var(--ec-text);
+  border-radius: 3px;
+  height: 0;
+}
+.station-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ec-accent);
+  border: 3px solid var(--ec-text);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-hand), cursive;
+  font-size: 1rem;
+  color: var(--ec-text);
+  flex: none;
+}
+
+/* ---- stempel ---- */
+.stamp-spin {
+  animation: stamp-spin 14s linear infinite;
+}
+@keyframes stamp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.stamp-drop {
+  animation: stamp-drop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+@keyframes stamp-drop {
+  0% {
+    transform: scale(2.4) rotate(-18deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.94) rotate(-8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-8deg);
+    opacity: 1;
+  }
+}
+
+/* ---- marquee vertikal sisi layar ---- */
+.vmarquee {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 44px;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+  display: none;
+}
+@media (min-width: 1100px) {
+  .vmarquee {
+    display: block;
+  }
+}
+.vmarquee-left {
+  left: 0;
+  border-right: 3px solid var(--ec-text);
+}
+.vmarquee-right {
+  right: 0;
+  border-left: 3px solid var(--ec-text);
+}
+.vmarquee-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 2rem 0;
+  will-change: transform;
+}
+.vmarquee-word {
+  writing-mode: vertical-rl;
+  font-family: var(--font-hand), cursive;
+  font-size: 1rem;
+  letter-spacing: 0.35em;
+  color: var(--ec-text);
+  white-space: nowrap;
+}
+.sprocket {
+  width: 22px;
+  height: 30px;
+  border-radius: 5px;
+  background: var(--ec-text);
+  opacity: 0.85;
+  flex: none;
+}
+
+/* ---- rel progres sisi (navigasi rute) ---- */
+.route-rail {
+  position: fixed;
+  left: 64px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: 0;
+}
+@media (min-width: 1100px) {
+  .route-rail {
+    display: flex;
+  }
+}
+.route-rail a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 0.6rem;
+  padding: 0.2rem;
+  text-decoration: none;
+  color: var(--ec-muted);
+}
+.route-rail a .rr-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--ec-text);
+  background: transparent;
+  flex: none;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.route-rail a .rr-label {
+  font-family: var(--font-hand), cursive;
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+  white-space: nowrap;
+}
+.route-rail a:hover .rr-label,
+.route-rail a:focus-visible .rr-label,
+.route-rail a.active .rr-label {
+  opacity: 1;
+  transform: none;
+}
+.route-rail a.active .rr-dot {
+  background: var(--ec-accent);
+  transform: scale(1.25);
+}
+.route-rail a.active {
+  color: var(--ec-text);
+}
+
+/* ---- form kartu pos ---- */
+.ec-label {
+  display: block;
+  font-family: var(--font-hand), cursive;
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+  color: var(--ec-text);
+}
+.ec-input,
+.ec-textarea,
+.ec-select {
+  width: 100%;
+  background: oklch(0.82 0.09 323);
+  border: 2.5px solid var(--ec-text);
+  border-radius: 4px;
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+  font-family: var(--font-body), sans-serif;
+  color: var(--ec-text);
+  line-height: 1.6;
+}
+.ec-input:focus-visible,
+.ec-textarea:focus-visible,
+.ec-select:focus-visible {
+  outline: 3px solid var(--ec-accent-2);
+  outline-offset: 2px;
+}
+.ec-textarea {
+  min-height: 7.5rem;
+  resize: vertical;
+}
+.field-msg {
+  min-height: 1.4em;
+  font-size: 1rem;
+  margin-top: 0.3rem;
+  font-family: var(--font-hand), cursive;
+}
+.field-msg.err {
+  color: oklch(0.42 0.19 25);
+}
+.field-msg.ok {
+  color: oklch(0.35 0.14 165);
+}
+.field-error .ec-input,
+.field-error .ec-textarea {
+  border-color: oklch(0.5 0.2 25);
+  background: oklch(0.85 0.08 25);
+}
+
+.ec-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-body), sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.85rem 1.6rem;
+  border: 3px solid var(--ec-text);
+  border-radius: 999px;
+  background: var(--ec-accent);
+  color: var(--ec-text);
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--ec-text);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  min-height: 44px;
+}
+.ec-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ec-text);
+}
+.ec-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ec-text);
+}
+.ec-btn:focus-visible {
+  outline: 3px solid var(--ec-accent-2);
+  outline-offset: 3px;
+}
+.ec-btn.secondary {
+  background: var(--ec-surface);
+}
+.ec-btn.blue {
+  background: var(--ec-accent-2);
+}
+.ec-btn.green {
+  background: var(--ec-pop);
+}
+
+/* ---- template picker cards ---- */
+.tpl-card {
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.tpl-card[aria-pressed='true'] {
+  background: var(--ec-accent);
+}
+.tpl-card[aria-pressed='true'] .tpl-check {
+  opacity: 1;
+  transform: scale(1);
+}
+.tpl-check {
+  opacity: 0;
+  transform: scale(0.5);
+  transition:
+    opacity 0.2s,
+    transform 0.25s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+/* ---- hasil esai ---- */
+.essay-paper {
+  background: oklch(0.9 0.045 323);
+  border: 3px solid var(--ec-text);
+  box-shadow: 8px 8px 0 var(--ec-text);
+  border-radius: 4px;
+}
+.seal-tape {
+  position: absolute;
+  width: 120px;
+  height: 34px;
+  background: var(--ec-accent);
+  border: 2px solid var(--ec-text);
+  opacity: 0.92;
+  z-index: 2;
+}
+.seal-tape.t1 {
+  top: -17px;
+  left: 7%;
+  transform: rotate(-8deg);
+}
+.seal-tape.t2 {
+  top: -17px;
+  right: 7%;
+  transform: rotate(6deg);
+  background: var(--ec-accent-2);
+}
+
+/* ---- easter egg stamp overlay ---- */
+#egg-stamp {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  place-items: center;
+  pointer-events: none;
+}
+#egg-stamp.show {
+  display: grid;
+}
+
+/* ---- grain ---- */
+.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+}
+
+/* ---- skip link ---- */
+.skip-link {
+  position: fixed;
+  top: -60px;
+  left: 12px;
+  z-index: 100;
+  background: var(--ec-text);
+  color: var(--ec-bg);
+  padding: 0.7rem 1.2rem;
+  border-radius: 0 0 8px 8px;
+  font-weight: 700;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ---- tilt ---- */
+.tilt {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.tilt .tilt-inner {
+  transform: translateZ(24px);
+}
+
+/* ---- reveal ---- */
+.ec-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+/* ---- motion toggle ---- */
+.motion-toggle {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 50;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp-spin,
+  .vmarquee-track {
+    animation: none !important;
+  }
+  .ec-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

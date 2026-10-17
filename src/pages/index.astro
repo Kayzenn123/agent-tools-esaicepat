@@ -1,0 +1,200 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import FAQs from '~/components/widgets/FAQs.astro';
+import StructuredData from '~/components/common/StructuredData.astro';
+
+import EsaiStudio from '~/components/tools/EsaiStudio.astro';
+import MarqueeBands from '~/components/MarqueeBands.astro';
+import RouteRail from '~/components/RouteRail.astro';
+import { Icon } from 'astro-icon/components';
+
+import { SITE, METADATA, I18N } from 'astrowind:config';
+import favIconSvg from '~/assets/favicons/favicon.svg';
+import { FAQS } from '~/data/templates';
+
+import '~/assets/styles/esaicepat.css';
+
+const metadata = {
+  title: 'EsaiCepat — Generator Draft Esai Motivasi Beasiswa',
+  ignoreTitleTemplate: true,
+  description:
+    'Tool gratis untuk pelajar Indonesia: susun draft esai motivasi beasiswa (BCA PPTI, LPDP, KIP Kuliah) dari 7 kartu pos, lengkap dengan cek kejujuran klaim. 100% berjalan di browser.',
+};
+
+const organizationId = `${SITE?.site}/#organization`;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE?.site}/#website`,
+    name: SITE?.name,
+    url: SITE?.site,
+    inLanguage: I18N?.language,
+    publisher: { '@id': organizationId },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: SITE?.name,
+    url: SITE?.site,
+    logo: new URL(favIconSvg.src, SITE?.site).toString(),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'EsaiCepat',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'IDR' },
+    inLanguage: 'id',
+  },
+];
+---
+
+<Layout metadata={metadata}>
+  <Fragment slot="announcement"></Fragment>
+  <Fragment slot="header"></Fragment>
+  <StructuredData slot="head" schema={structuredData} />
+  <Fragment slot="footer">
+    <footer class="mx-auto max-w-5xl px-4 sm:px-6 py-12 text-center">
+      <p class="font-hand fs-body" style="color: var(--ec-muted)">
+        EsaiCepat — dirakit dengan jujur di browser. Tidak ada data yang dikirim ke mana-mana.
+      </p>
+      <p class="fs-body mt-2" style="color: var(--ec-muted)">
+        Ingat pesan Mas Pos: esai yang bagus ditulis ulang dengan bahasamu sendiri.
+      </p>
+    </footer>
+  </Fragment>
+
+  <a href="#stasiun-1" class="skip-link">Lompat ke konten</a>
+
+  <!-- filter hand-drawn goyang global -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="ec-wobble" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="n" seed="7" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="grain">
+    <MarqueeBands />
+    <RouteRail />
+
+    <!-- ================= HERO: title card ================= -->
+    <header id="hero" data-station class="relative overflow-hidden" style="min-height: 100svh">
+      <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <!-- layer parallax -->
+        <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <p data-plx="0.06" aria-hidden="true" class="font-display wobble absolute top-[2%] left-1/2 -translate-x-1/2 fs-display whitespace-nowrap" style="color: oklch(0.4 0.07 323)">RUTE&ensp;RUTE</p>
+          <div data-plx="0.14" class="absolute top-[16%] left-[6%] w-24 h-24 sm:w-36 sm:h-36 rounded-full hidden sm:block" style="background: var(--ec-accent); border: 3px solid var(--ec-text)"></div>
+          <div data-plx="0.2" class="absolute top-[24%] right-[8%] hidden sm:block">
+            <div class="postcard w-40 sm:w-56 rotate-6 p-3">
+              <p class="font-hand fs-body">kartu pos 1: pembuka…</p>
+            </div>
+          </div>
+          <div data-plx="0.28" class="absolute bottom-[30%] left-[7%] hidden sm:block">
+            <div class="postcard w-40 sm:w-52 -rotate-6 p-3">
+              <p class="font-hand fs-body">kartu pos 4: prestasi…</p>
+            </div>
+          </div>
+          <div data-plx="0.36" class="absolute bottom-[18%] right-[12%] hidden md:block">
+            <svg width="120" height="120" viewBox="0 0 160 160" class="wobble stamp-spin">
+              <defs><path id="hero-circle" d="M 80,80 m -58,0 a 58,58 0 1,1 116,0 a 58,58 0 1,1 -116,0" /></defs>
+              <circle cx="80" cy="80" r="72" fill="none" stroke="var(--ec-text)" stroke-width="6" />
+              <text font-family="var(--font-hand), cursive" font-size="20" fill="var(--ec-text)" letter-spacing="4">
+                <textPath href="#hero-circle">TULIS • KIRIM • LOLOS • TULIS •</textPath>
+              </text>
+              <text x="80" y="98" text-anchor="middle" font-family="var(--font-display), cursive" font-size="52" fill="var(--ec-text)">✉</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl pt-16 sm:pt-10">
+          <p class="font-hand fs-lead ec-reveal mb-2" data-plx="0.1">kantor pos esai motivasi — gratis</p>
+          <h1 class="font-display fs-display ec-reveal" data-scramble>EsaiCepat</h1>
+          <p class="fs-lead max-w-2xl mx-auto mt-6 ec-reveal">
+            Esai beasiswamu adalah <strong>bundel kartu pos</strong>. Tulis tujuh kartu, Mas Pos menyegelnya
+            jadi satu kiriman — lengkap dengan pemeriksaan kejujuran sebelum berangkat.
+          </p>
+          <div class="mt-10 flex flex-wrap justify-center gap-4 ec-reveal">
+            <a href="#stasiun-1" class="ec-btn">
+              <Icon name="ri:train-line" class="wobble" width="22" height="22" aria-hidden="true" />
+              Naik kereta pos
+            </a>
+            <a href="#faq" class="ec-btn secondary">
+              <Icon name="ri:question-line" class="wobble" width="22" height="22" aria-hidden="true" />
+              Tanya dulu
+            </a>
+          </div>
+          <p class="font-hand fs-body mt-8 ec-reveal" style="color: var(--ec-muted)">gulir ke bawah — perjalanan dimulai</p>
+          <Icon name="ri:arrow-down-line" class="wobble mx-auto mt-2 ec-reveal" width="30" height="30" aria-hidden="true" />
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= RUTE: stasiun 1–4 + arsip ================= -->
+    <div class="relative">
+      <div class="rail-line" aria-hidden="true"><div class="rail-progress" id="rail-progress"></div></div>
+      <main id="konten">
+        <EsaiStudio />
+      </main>
+    </div>
+
+    <!-- ================= FAQ ================= -->
+    <div id="faq" data-station class="scroll-mt-8 mx-auto max-w-5xl px-4 sm:px-6">
+      <div class="flex items-center gap-4 mb-6 ec-reveal">
+        <span class="station-dot wobble" aria-hidden="true">?</span>
+        <p class="font-hand fs-body">pos tanya jawab — sebelum menulis kartu pertama</p>
+      </div>
+      <FAQs
+        title="Tanya jawab di loket"
+        subtitle="Yang sering ditanyakan sebelum menulis kartu pertama."
+        columns={1}
+        items={FAQS}
+      />
+    </div>
+
+    <!-- ================= UJUNG RUTE: peta zoom-out ================= -->
+    <section id="ujung" data-station class="relative overflow-hidden py-24 sm:py-32 scroll-mt-8" aria-labelledby="ujung-title">
+      <div id="peta-inner" class="mx-auto max-w-4xl px-4 sm:px-6 will-change-transform">
+        <h2 id="ujung-title" class="font-display fs-lead text-center mb-10 ec-reveal" data-scramble>Peta perjalanan kirimanmu</h2>
+        <div class="postcard ec-reveal">
+          <div class="postcard-inner p-6 sm:p-10">
+            <svg viewBox="0 0 400 520" class="w-full h-auto wobble" role="img" aria-label="Peta rute: dari kotamu ke meja panitia melewati empat stasiun">
+              <line x1="200" y1="30" x2="200" y2="490" stroke="var(--ec-text)" stroke-width="6" stroke-dasharray="14 10" />
+              {[
+                { y: 60, label: 'Kotamu', sub: 'kartu ditulis' },
+                { y: 170, label: 'Stasiun 1–2', sub: 'pilih & tulis' },
+                { y: 280, label: 'Stasiun 3', sub: 'cek kejujuran' },
+                { y: 390, label: 'Stasiun 4', sub: 'disegel' },
+                { y: 480, label: 'Meja panitia', sub: 'kiriman tiba' },
+              ].map((s) => (
+                <g>
+                  <circle cx="200" cy={s.y} r="20" fill="var(--ec-accent)" stroke="var(--ec-text)" stroke-width="4" />
+                  <text x="232" y={s.y - 2} font-family="var(--font-display), cursive" font-size="24" fill="var(--ec-text)">{s.label}</text>
+                  <text x="232" y={s.y + 22} font-family="var(--font-hand), cursive" font-size="18" fill="var(--ec-muted)">{s.sub}</text>
+                </g>
+              ))}
+              <g transform="translate(200,60)">
+                <rect x="-70" y="-58" width="140" height="44" rx="4" fill="var(--ec-surface)" stroke="var(--ec-text)" stroke-width="3" transform="rotate(-6)" />
+                <text x="0" y="-30" text-anchor="middle" font-family="var(--font-hand), cursive" font-size="18" fill="var(--ec-text)" transform="rotate(-6)">untuk masa depanmu</text>
+              </g>
+            </svg>
+            <p class="font-hand fs-lead text-center mt-6">Semoga kirimannya sampai — dan lolos seleksi berkas, Dek!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <button type="button" id="motion-toggle" class="ec-btn secondary motion-toggle" aria-pressed="true" hidden>
+    <Icon name="ri:movie-line" class="wobble" width="18" height="18" aria-hidden="true" /><span>Gerak: nyala</span>
+  </button>
+
+  <script src="../assets/scripts/route-motion.js"></script>
+  <noscript><style>.ec-reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
+</Layout>

@@ -1,0 +1,23 @@
+---
+// Rel progres sisi layar: navigasi antar stasiun (pengganti navbar).
+const stations = [
+  { href: '#hero', label: 'Mulai' },
+  { href: '#stasiun-1', label: 'Pilih beasiswa' },
+  { href: '#stasiun-2', label: 'Tulis kartu' },
+  { href: '#stasiun-3', label: 'Cek kejujuran' },
+  { href: '#stasiun-4', label: 'Hasil kiriman' },
+  { href: '#arsip', label: 'Arsip' },
+  { href: '#faq', label: 'Tanya jawab' },
+  { href: '#ujung', label: 'Ujung rute' },
+];
+---
+<nav class="route-rail" id="route-rail" aria-label="Navigasi rute kiriman">
+  {
+    stations.map((s) => (
+      <a href={s.href}>
+        <span class="rr-dot" aria-hidden="true"></span>
+        <span class="rr-label">{s.label}</span>
+      </a>
+    ))
+  }
+</nav>
